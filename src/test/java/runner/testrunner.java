@@ -16,8 +16,8 @@ import java.io.File;
         glue = "seleniumgluecode",
         plugin = { "com.cucumber.listener.ExtentCucumberFormatter:target/cucumber-reports/report.html"},
         monochrome = true,
-        //tags = "@Register,@Login,@NewSavingsAccount,@TransferAndLogout"
-        tags = "@TransferAndLogout"
+        tags = "@Register,@Login,@NewSavingsAccount,@TransferAndLogout"
+        //tags = "@Register"
 )
 public class testrunner {
     public WebDriver driver;

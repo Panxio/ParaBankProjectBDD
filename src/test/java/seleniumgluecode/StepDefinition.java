@@ -4,19 +4,24 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import util.abstractMethods;
 
+import java.io.File;
+import java.sql.Driver;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class test extends abstractMethods {
+public class StepDefinition extends abstractMethods {
     public static WebDriver driver;
 
     private static String user;
@@ -29,7 +34,6 @@ public class test extends abstractMethods {
     public void user_is_on_homepage() throws Throwable {
         System.setProperty("webdriver.chrome.driver","drivers/chromedriver.exe");
         driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
         driver.manage().window().maximize();
     }
@@ -77,11 +81,26 @@ public class test extends abstractMethods {
         Thread.sleep(2000);
         driver.quit();
     }
+
+    @And("^take a screenshot$")
+    public void take_a_screenshot() throws Throwable {
+        //codigo captura de pantalla
+        TakesScreenshot scrShot =((TakesScreenshot)driver);
+        File SrcFile = scrShot.getScreenshotAs(OutputType.FILE);
+
+        DateFormat dateFormat = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
+        String date = dateFormat.format(new Date());
+        System.out.println(date);
+        File DestFile = new File("C://Users//franx//Documents//SeleniumProjects//paraBank//src//test//java//screenshots//sc"+date+".png");
+        FileUtils.copyFile(SrcFile, DestFile);
+        Thread.sleep(2000);
+
+    }
     @When("^user enters his login credentials$")
     public void user_enters_his_login_credentials() throws Throwable {
         System.out.println("The user is: "+user);
         System.out.println("The pass is: "+pass);
-        user = "Test_20230709115349";
+        //user = "Test_20230709115349";
         driver.findElement(By.name("username")).sendKeys(user);
         driver.findElement(By.name("password")).sendKeys(pass);
         Thread.sleep(2000);
@@ -93,6 +112,7 @@ public class test extends abstractMethods {
         String TextExpected = "Accounts Overview";
         String actualText = driver.findElement(By.xpath("//div[@class=\"ng-scope\"]/div/h1")).getText();
         Assert.assertEquals(TextExpected,actualText);
+        Thread.sleep(2000);
         driver.quit();
     }
 
@@ -115,10 +135,14 @@ public class test extends abstractMethods {
     @Then("^message indicates open account$")
     public void message_indicates_open_account() throws Throwable{
         String TextExpected = "Account Opened!";
-        String actualText = driver.findElement(By.xpath("//h1[contains(text(),'Opened')]")).getText();
+        driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
+        Thread.sleep(2000);
+        String actualText = driver.findElement(By.xpath("//h1[contains(text(),'Opened!')]")).getText();
         Assert.assertEquals(TextExpected,actualText);
         savingAccount = driver.findElement(By.id("newAccountId")).getText();
         System.out.println("the account number is: "+savingAccount);
+        take_a_screenshot();
+        Thread.sleep(2000);
         driver.close();
 
     }
@@ -161,9 +185,7 @@ public class test extends abstractMethods {
         String actualText = driver.findElement(By.xpath("//h1[contains(text(),'Complete!')]")).getText();
         Assert.assertEquals(TextExpected,actualText);
         Thread.sleep(2000);
-        driver.findElement(By.linkText("Log Out")).click();
-        driver.quit();
-    }
+            }
 
     @When("^click logout link$")
     public void click_logout_link() throws Throwable {
